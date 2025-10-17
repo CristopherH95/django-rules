@@ -1,8 +1,12 @@
-from asgiref.sync import sync_to_async
-
 from .rulesets import RuleSet
 
+
 permissions = RuleSet()
+
+
+async def _run_async(func, *args, **kwargs):
+    from asgiref.sync import sync_to_async
+    return await sync_to_async(func)(*args, **kwargs)
 
 
 def add_perm(name, pred):
@@ -36,7 +40,7 @@ class ObjectPermissionBackend(object):
         return has_perm(app_label, user)
 
     async def ahas_perm(self, user, perm, *args, **kwargs):
-        return await sync_to_async(has_perm)(user, perm, *args, **kwargs)
+        return await _run_async(has_perm, user, perm, *args, **kwargs)
 
     async def ahas_module_perms(self, user, app_label):
-        return await sync_to_async(has_perm)(app_label, user)
+        return await _run_async(has_perm, app_label, user)

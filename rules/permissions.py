@@ -39,6 +39,9 @@ class ObjectPermissionBackend(object):
     def has_module_perms(self, user, app_label):
         return has_perm(app_label, user)
 
+    async def aauthenticate(self, *args, **kwargs):
+        return None
+
     async def ahas_perm(self, user, perm, *args, **kwargs):
         return await _run_async(has_perm, user, perm, *args, **kwargs)
 
